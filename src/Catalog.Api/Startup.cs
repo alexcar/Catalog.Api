@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using Catalog.Infrastructure;
 using Catalog.Api.Extensions;
+using Catalog.Domain.Repositories;
+using Catalog.Infrastructure.Repositories;
+using Catalog.Domain.Extensions;
 
 namespace Catalog.Api
 {
@@ -28,7 +22,13 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value);
+            services.AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value)
+                .AddScoped<IItemRepository, ItemRepository>()
+                .AddMappers()
+                .AddServices()
+                .AddControllers()
+                .AddValidation();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

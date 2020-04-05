@@ -1,11 +1,9 @@
 ﻿using Catalog.Domain.Entities;
-using Catalog.Infrastructure.Tests.Extensions;
+using Catalog.Fixtures.Extensions;
+using Catalog.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Catalog.Infrastructure.Tests
+namespace Catalog.Fixtures
 {
 	public class TestCatalogContext : CatalogContext
 	{
@@ -17,6 +15,7 @@ namespace Catalog.Infrastructure.Tests
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			
 			modelBuilder.Seed<Artist>("./Data/artist.json");
 			modelBuilder.Seed<Genre>("./Data/genre.json");
 			modelBuilder.Seed<Item>("./Data/item.json");
