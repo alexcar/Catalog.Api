@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Catalog.Infrastructure.Repositories
@@ -23,7 +22,7 @@ namespace Catalog.Infrastructure.Repositories
 		public async Task<IEnumerable<Item>> GetAsync()
 		{
 			return await _context
-				.Items
+				.Items.Where(p => !p.IsInactive)
 				.AsNoTracking()
 				.ToListAsync();
 		}
@@ -54,6 +53,7 @@ namespace Catalog.Infrastructure.Repositories
 		{
 			var items = await _context
 				.Items
+				.Where(p => !p.IsInactive)
 				.Where(item => item.ArtistId == id)
 				.Include(x => x.Genre)
 				.Include(x => x.Artist)
@@ -65,6 +65,7 @@ namespace Catalog.Infrastructure.Repositories
 		public async Task<IEnumerable<Item>> GetItemByGenreIdAsync(Guid id)
 		{
 			var items = await _context.Items
+				.Where(p => !p.IsInactive)
 				.Where(item => item.GenreId == id)
 				.Include(x => x.Genre)
 				.Include(x => x.Artist)

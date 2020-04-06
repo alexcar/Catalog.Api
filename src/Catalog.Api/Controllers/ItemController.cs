@@ -74,5 +74,16 @@ namespace Catalog.Api.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("id:guid")]
+        [ItemExists]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var request = new DeleteItemRequest { Id = id };
+
+            await _itemService.DeleteItemAsync(request);
+
+            return NoContent();
+        }
     }
 }

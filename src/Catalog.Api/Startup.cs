@@ -7,6 +7,9 @@ using Catalog.Api.Extensions;
 using Catalog.Domain.Repositories;
 using Catalog.Infrastructure.Repositories;
 using Catalog.Domain.Extensions;
+using RiskFirst.Hateoas;
+using Catalog.Api.Responses;
+using Catalog.Api.Controllers;
 
 namespace Catalog.Api
 {
@@ -22,7 +25,8 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value)
+            services
+                .AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value)
                 .AddScoped<IItemRepository, ItemRepository>()
                 .AddScoped<IArtistRepository, ArtistRepository>()
                 .AddScoped<IGenreRepository, GenreRepository>()
@@ -31,6 +35,21 @@ namespace Catalog.Api
                 .AddControllers()
                 .AddValidation();
 
+            services.AddLinks(config =>
+            {
+                config.AddPolicy<ItemHateoasResponse>(policy =>
+                {
+                    policy
+                        .RequireRoutedLink(nameof(ItemsHateoasController.Get), nameof(ItemsHateoasController.Get))
+                        .RequireRoutedLink(nameof(ItemsHateoasController.GetById),
+                            nameof(ItemsHateoasController.GetById), _ => new { id = _.Data.Id })
+                        .RequireRoutedLink(nameof(ItemsHateoasController.Post), nameof(ItemsHateoasController.Post))
+                        .RequireRoutedLink(nameof(ItemsHateoasController.Put), nameof(ItemsHateoasController.Put),
+                            x => new { id = x.Data.Id })
+                        .RequireRoutedLink(nameof(ItemsHateoasController.Delete), nameof(ItemsHateoasController.Delete),
+                            x => new { id = x.Data.Id });
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
