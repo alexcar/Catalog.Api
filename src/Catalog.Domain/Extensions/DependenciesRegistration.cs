@@ -12,7 +12,7 @@ namespace Catalog.Domain.Extensions
 		{
 			services
 				.AddSingleton<IArtistMapper, ArtistMapper>()
-				.AddSingleton<IGenreMapper, IGenreMapper>()
+				.AddSingleton<IGenreMapper, GenreMapper>()
 				.AddSingleton<IItemMapper, ItemMapper>();
 
 			return services;
@@ -23,7 +23,7 @@ namespace Catalog.Domain.Extensions
 			services
 				.AddScoped<IItemService, ItemService>()
 				.AddScoped<IArtistService, ArtistService>()
-				.AddScoped<IGenreService, IGenreService>();
+				.AddScoped<IGenreService, GenreService>();
 
 			return services;
 		}
