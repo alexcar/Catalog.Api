@@ -104,7 +104,7 @@ namespace Catalog.Infrastructure.Tests
 			//await sut.IUnitOfWork.SaveEntitiesAsync();
 
 			_sut.Add(testItem);
-			await _sut.IUnitOfWork.SaveEntitiesAsync();
+			await _sut.UnitOfWork.SaveEntitiesAsync();
 
 			_context.Items
 				.FirstOrDefault(_ => _.Id == testItem.Id)
@@ -144,7 +144,7 @@ namespace Catalog.Infrastructure.Tests
 
 			_sut.Update(testItem);
 
-			await _sut.IUnitOfWork.SaveEntitiesAsync();
+			await _sut.UnitOfWork.SaveEntitiesAsync();
 
 			var result = _context.Items
 				.FirstOrDefault(item => item.Id == testItem.Id);

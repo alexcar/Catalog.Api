@@ -39,7 +39,7 @@ namespace Catalog.Domain.Services
 			var item = _itemMapper.Map(request);
 			var result = _itemRepository.Add(item);
 
-			await _itemRepository.IUnitOfWork.SaveChangesAsync();
+			await _itemRepository.UnitOfWork.SaveChangesAsync();
 
 			return _itemMapper.Map(result);			
 		}
@@ -59,7 +59,7 @@ namespace Catalog.Domain.Services
 			var entity = _itemMapper.Map(request);
 			var result = _itemRepository.Update(entity);
 
-			await _itemRepository.IUnitOfWork.SaveChangesAsync();
+			await _itemRepository.UnitOfWork.SaveChangesAsync();
 
 			return _itemMapper.Map(result);
 		}		
