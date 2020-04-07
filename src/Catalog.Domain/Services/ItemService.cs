@@ -1,7 +1,9 @@
-﻿using Catalog.Domain.Mappers;
+﻿using Catalog.Domain.Logging;
+using Catalog.Domain.Mappers;
 using Catalog.Domain.Repositories;
 using Catalog.Domain.Requests.Item;
 using Catalog.Domain.Responses.Item;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +15,16 @@ namespace Catalog.Domain.Services
 	{
 		private readonly IItemRepository _itemRepository;
 		private readonly IItemMapper _itemMapper;
+		private readonly ILogger<IItemService> _logger;
 
-		public ItemService(IItemRepository itemRepository, IItemMapper itemMapper)
+		public ItemService(
+			IItemRepository itemRepository, 
+			IItemMapper itemMapper,
+			ILogger<IItemService> logger)
 		{
 			_itemRepository = itemRepository;
 			_itemMapper = itemMapper;
+			_logger = logger;
 		}
 
 		public async Task<IEnumerable<ItemResponse>> GetItemsAsync()
@@ -31,6 +38,10 @@ namespace Catalog.Domain.Services
 
 			var entity = await _itemRepository.GetAsync(request.Id);
 
+			_logger.LogInformation(
+				Events.GetById,
+				Messages.TargetEntityChanged_id, entity?.Id);
+
 			return _itemMapper.Map(entity);
 		}		
 
@@ -39,7 +50,17 @@ namespace Catalog.Domain.Services
 			var item = _itemMapper.Map(request);
 			var result = _itemRepository.Add(item);
 
-			await _itemRepository.UnitOfWork.SaveChangesAsync();
+			var modifiedRecords = await _itemRepository
+				.UnitOfWork.SaveChangesAsync();
+
+			_logger.LogInformation(
+				Events.Add,
+				Messages.NumberOfRecordAffected_modifiedRecords,
+				modifiedRecords);
+
+			_logger.LogInformation(
+				Events.Add,
+				Messages.ChangesApplied_id, result?.Id);
 
 			return _itemMapper.Map(result);			
 		}

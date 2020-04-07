@@ -4,6 +4,7 @@ using Catalog.Domain.Requests.Item;
 using Catalog.Domain.Services;
 using Catalog.Fixtures;
 using Catalog.Infrastructure.Repositories;
+using Microsoft.Extensions.Logging;
 using Shouldly;
 using System;
 using System.Threading.Tasks;
@@ -18,14 +19,16 @@ namespace Catalog.Domain.Tests.Services
 
         public ItemServiceTests(CatalogContextFactory catalogContextFactory)
         {
-            _itemRepository = new ItemRepository(catalogContextFactory.ContextInstance);
+            _itemRepository = new ItemRepository(
+                catalogContextFactory.ContextInstance);            
             _mapper = catalogContextFactory.ItemMapper;
+            
         }
 
         [Fact]
         public async Task getitems_should_return_right_data()
         {
-            ItemService sut = new ItemService(_itemRepository, _mapper);
+            ItemService sut = new ItemService(_itemRepository, _mapper, null);
 
             var result =
                 await sut.GetItemsAsync();
@@ -37,7 +40,7 @@ namespace Catalog.Domain.Tests.Services
         [InlineData("b5b05534-9263-448c-a69e-0bbd8b3eb90e")]
         public async Task getitem_should_return_right_data(string guid)
         {
-            ItemService sut = new ItemService(_itemRepository, _mapper);
+            ItemService sut = new ItemService(_itemRepository, _mapper, null);
             var result =
                 await sut.GetItemAsync(new GetItemRequest { Id = new Guid(guid) });
 
@@ -47,7 +50,7 @@ namespace Catalog.Domain.Tests.Services
         [Fact]
         public void getitem_should_thrown_exception_with_null_id()
         {
-            ItemService sut = new ItemService(_itemRepository, _mapper);
+            ItemService sut = new ItemService(_itemRepository, _mapper, null);
             sut.GetItemAsync(null).ShouldThrow<ArgumentNullException>();
         }
 
@@ -68,7 +71,7 @@ namespace Catalog.Domain.Tests.Services
                 ArtistId = new Guid("f08a333d-30db-4dd1-b8ba-3b0473c7cdab")
             };
 
-            IItemService sut = new ItemService(_itemRepository, _mapper);
+            IItemService sut = new ItemService(_itemRepository, _mapper, null);
 
             var result =
                 await sut.AddItemAsync(testItem);
@@ -99,7 +102,7 @@ namespace Catalog.Domain.Tests.Services
                 ArtistId = new Guid("f08a333d-30db-4dd1-b8ba-3b0473c7cdab")
             };
 
-            ItemService sut = new ItemService(_itemRepository, _mapper);
+            ItemService sut = new ItemService(_itemRepository, _mapper, null);
 
             var result =
                 await sut.EditItemAsync(testItem);
