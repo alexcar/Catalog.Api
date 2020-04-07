@@ -1,15 +1,18 @@
+using Catalog.Api.Controllers;
+using Catalog.Api.Extensions;
+using Catalog.Api.Middleware;
+using Catalog.Api.Responses;
+using Catalog.Domain.Extensions;
+using Catalog.Domain.Repositories;
+using Catalog.Domain.Responses.Item;
+using Catalog.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Catalog.Api.Extensions;
-using Catalog.Domain.Repositories;
-using Catalog.Infrastructure.Repositories;
-using Catalog.Domain.Extensions;
+using Newtonsoft.Json;
 using RiskFirst.Hateoas;
-using Catalog.Api.Responses;
-using Catalog.Api.Controllers;
 
 namespace Catalog.Api
 {
@@ -27,13 +30,20 @@ namespace Catalog.Api
         {
             services
                 .AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value)
+                .AddResponseCaching()
+                .AddMemoryCache()
                 .AddScoped<IItemRepository, ItemRepository>()
                 .AddScoped<IArtistRepository, ArtistRepository>()
                 .AddScoped<IGenreRepository, GenreRepository>()
                 .AddMappers()
                 .AddServices()
                 .AddControllers()
-                .AddValidation();
+                //.AddNewtonsoftJson(options =>
+                //{
+                //    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                //})
+                .AddValidation()
+                .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
 
             services.AddLinks(config =>
             {
@@ -60,12 +70,16 @@ namespace Catalog.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(cfg =>
+            {
+                cfg.AllowAnyOrigin();
+            });
 
             app.UseRouting();
-
+            app.UseHttpsRedirection();            
             app.UseAuthorization();
-
+            app.UseResponseCaching();
+            app.UseMiddleware<ResponseTimeMiddlewareAsync>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

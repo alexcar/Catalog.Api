@@ -43,6 +43,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet("{id:guid}")]
         [ItemExists]
+        [ResponseCache(Duration = 100, VaryByQueryKeys = new [] { "*" })]
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _itemService.GetItemAsync(

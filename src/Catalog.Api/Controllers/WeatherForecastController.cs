@@ -24,6 +24,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(Duration = 100, VaryByQueryKeys = new[] { "*" })]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
