@@ -28,7 +28,7 @@ namespace Catalog.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
+            services                
                 .AddCatalogContext(Configuration.GetSection("DataSource:ConnectionString").Value)
                 .AddResponseCaching()
                 .AddMemoryCache()
@@ -44,6 +44,11 @@ namespace Catalog.Api
                 //})
                 .AddValidation()
                 .AddJsonOptions(options => options.JsonSerializerOptions.IgnoreNullValues = true);
+
+            services
+                .AddHealthChecks()
+                .AddSqlServer(Configuration.GetSection("DataSource:ConnectionString").Value);
+
 
             services.AddLinks(config =>
             {
@@ -79,6 +84,7 @@ namespace Catalog.Api
             app.UseHttpsRedirection();            
             app.UseAuthorization();
             app.UseResponseCaching();
+            app.UseHealthChecks("/health");
             app.UseMiddleware<ResponseTimeMiddlewareAsync>();
             app.UseEndpoints(endpoints =>
             {
