@@ -65,6 +65,14 @@ namespace Catalog.Api
                             x => new { id = x.Data.Id });
                 });
             });
+
+            services
+                .AddOpenApiDocument(settings =>
+                {
+                    settings.Title = "Catalog Api";
+                    settings.DocumentName = "V3";
+                    settings.Version = "V3";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +94,7 @@ namespace Catalog.Api
             app.UseResponseCaching();
             app.UseHealthChecks("/health");
             app.UseMiddleware<ResponseTimeMiddlewareAsync>();
+            app.UseOpenApi().UseSwaggerUi3();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

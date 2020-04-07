@@ -8,6 +8,7 @@ using Catalog.Api.Filters;
 using Catalog.Api.Responses;
 using Catalog.Domain.Responses.Item;
 using Microsoft.Extensions.Logging;
+using Catalog.Api.Conventions;
 
 namespace Catalog.Api.Controllers
 {
@@ -25,6 +26,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet]
+        [ApiConventionMethod(typeof(ItemApiConvention), nameof(ItemApiConvention.Get))]
         public async Task<IActionResult> Get([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
         {
             var result = await _itemService.GetItemsAsync();
@@ -43,6 +45,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ApiConventionMethod(typeof(ItemApiConvention), nameof(ItemApiConvention.GetById))]
         [ItemExists]
         [ResponseCache(Duration = 100, VaryByQueryKeys = new [] { "*" })]
         public async Task<IActionResult> GetById(Guid id)
@@ -57,6 +60,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpPost]
+        [ApiConventionMethod(typeof(ItemApiConvention), nameof(ItemApiConvention.Create))]
         public async Task<IActionResult> Post(AddItemRequest request)
         {
             var result = await _itemService.AddItemAsync(request);
@@ -68,6 +72,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpPut("id:guid")]
+        [ApiConventionMethod(typeof(ItemApiConvention), nameof(ItemApiConvention.Update))]
         [ItemExists]
         public async Task<IActionResult> Put(Guid id, EditItemRequest request)
         {
@@ -78,6 +83,7 @@ namespace Catalog.Api.Controllers
         }
 
         [HttpDelete("id:guid")]
+        [ApiConventionMethod(typeof(ItemApiConvention), nameof(ItemApiConvention.Delete))]
         [ItemExists]
         public async Task<IActionResult> Delete(Guid id)
         {
